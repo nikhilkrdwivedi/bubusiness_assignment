@@ -69,6 +69,7 @@ app.get(/^\/(.*)/, (req, res) => res.status(404).json({
     "message": "Unexpected route is hitting.",
     "data": []
 }))
+
 if (process.env.production === 'true') {
     app.listen(port, async() => {
         console.log(`server is running on production on port  ${port} !`);

@@ -173,7 +173,7 @@ export async function getBookHistory(req, res) {
             }
         ])
         return res.status(200).json({
-            message: "List ff All Rental Book with History",
+            message: "List of All Rental Book with History",
             data: bookList,
         })
     } catch (error) {
