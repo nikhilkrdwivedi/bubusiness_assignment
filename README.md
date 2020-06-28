@@ -7,6 +7,7 @@ This is basic node application which able to authenticate user and provide prote
   - JWT - Json Web Token
   - Bcrypt
   - ES6
+  - uuidv4
 
 
 ### Run Following Commands
