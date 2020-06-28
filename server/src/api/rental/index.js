@@ -7,11 +7,9 @@ import { Router } from 'express';
 
 const router = Router();
 
-import { issueBook, returnBook /*, getRentBooksList, getRentBookByFilter*/ } from './rental.controller';
+import { issueBook, returnBook, getBookHistory, getBooksByLoanOrNot } from './rental.controller';
 router.post('/issueBook', issueBook);
 router.put('/returnBook', returnBook);
-// router.get('/getBooks', getBooks)
-// router.get('/getBook/:isbn', getBookByISBN)
-// router.put('/updateBook', updateBook);
-// router.delete('/deleteBook/:isbn', deleteBook);
+router.get('/getBookHistory', getBookHistory)
+router.get('/getBooksByLoanOrNot/:isIssuedStatus', getBooksByLoanOrNot)
 export default router

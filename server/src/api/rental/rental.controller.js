@@ -80,7 +80,6 @@ export async function issueBook(req, res) {
 
 }
 
-
 //Return Book
 export async function returnBook(req, res) {
     try {
@@ -148,123 +147,91 @@ export async function returnBook(req, res) {
 }
 
 
-//Get All Book List
-export async function getBooks(req, res) {
+//Get getBookHistory
+export async function getBookHistory(req, res) {
     try {
-        let allBooks = await Book.find({}).sort({ title: 1 });
+        let bookList = await Rental.aggregate([{
+                "$lookup": {
+                    "localField": "isbn",
+                    "from": "books",
+                    "foreignField": "isbn",
+                    "as": "bookDetails"
+                }
+            }, {
+                "$unwind": {
+                    "path": "$bookDetails",
+                    "preserveNullAndEmptyArrays": true
+                }
+            },
+            {
+                "$lookup": {
+                    "localField": "cardHolder",
+                    "from": "users",
+                    "foreignField": "cardNumber",
+                    "as": "userData"
+                }
+            }
+        ])
         return res.status(200).json({
-            message: "All Data is sorted by title",
-            count: allBooks.length,
-            data: allBooks
+            message: "List ff All Rental Book with History",
+            data: bookList,
         })
     } catch (error) {
         console.log(error)
         return res.status(500).json({
             message: "Internal Server Error !!!",
+            data: []
         });
     }
 }
 
-//Get Book By ISBN
-export async function getBookByISBN(req, res) {
+
+//Get Book which is issued to someone then isIssuedStatus=true else false
+export async function getBooksByLoanOrNot(req, res) {
     try {
-        console.log('req.params.id', req.params.isbn)
-        let ISBN = req.params.isbn
-        if (!ISBN) {
-            return res.status(400).json({
-                message: "No ISBN Recieved to Query a Book.",
-                data: []
-            })
-        }
-        let book = await Book.find({ isbn: ISBN });
+        let isIssuedStatus = req.params.isIssuedStatus === 'true' ? true : false
+        console.log('req.params.id', typeof isIssuedStatus)
+        console.log('req.params.id', isIssuedStatus)
+
+
+        let bookList = await Rental.aggregate([{
+                "$match": {
+                    "isIssued": isIssuedStatus
+                }
+            },
+            {
+                "$lookup": {
+                    "localField": "isbn",
+                    "from": "books",
+                    "foreignField": "isbn",
+                    "as": "bookDetails"
+                }
+            }, {
+                "$unwind": {
+                    "path": "$bookDetails",
+                    "preserveNullAndEmptyArrays": true
+                }
+            },
+            {
+                "$lookup": {
+                    "localField": "cardHolder",
+                    "from": "users",
+                    "foreignField": "cardNumber",
+                    "as": "userData"
+                }
+            }
+        ])
         return res.status(200).json({
-            message: "Book Found.",
-            count: book.length,
-            data: book
+            message: "List of All Rental Books.",
+            data: bookList,
         })
     } catch (error) {
         console.log(error)
         return res.status(500).json({
             message: "Internal Server Error !!!",
+            data: []
         });
     }
 }
 
-export async function updateBook(req, res) {
-    try {
-        let book = req.body
-        console.log('req.body', req.body)
-        if (!Object.keys(book).length && !book.isbn) {
-            return res.status(400).json({
-                message: "No Book Detail or No ISBN  Recieved to Update.",
-                data: []
-            })
-        }
-
-        Book.findOneAndUpdate({ isbn: book.isbn },
-            book, { upsert: true, new: true, runValidators: true },
-            function(err, doc) {
-                if (err) {
-                    console.log(err)
-                    return res.status(424).json({
-                        message: "Operation Failed.",
-                        data: doc,
-                    })
-                }
-                return res.status(200).json({
-                    message: "Book Updated.",
-                    data: doc,
-                })
-            }
-        );
-
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Internal Server Error !!!",
-        });
-    }
-}
-
-//Delete Book By ISBN
-export async function deleteBook(req, res) {
-    try {
-        let bookISBN = req.params.isbn
-        if (!bookISBN) {
-            return res.status(400).json({
-                message: "No ISBN Recieved For Delete...",
-                data: []
-            })
-        }
-        let checkISBN = await Book.findOne({ isbn: bookISBN });
-
-        if (!checkISBN) {
-            return res.status(400).json({
-                message: "ISBN no is not found",
-                data: [],
-            })
-        }
-        Book.deleteOne({ isbn: bookISBN },
-            function(err, doc) {
-                if (err) {
-                    console.log(err)
-                    return res.status(424).json({
-                        message: "Operation Failed.",
-                        data: doc,
-                    })
-                }
-                return res.status(200).json({
-                    message: "Book Deleted.",
-                    data: checkISBN,
-                })
-            }
-        );
-
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({
-            message: "Internal Server Error !!!",
-        });
-    }
-}
-export default { issueBook, getBooks, getBookByISBN, updateBook, deleteBook };
+export default { issueBook, returnBook, getBookHistory, getBooksByLoanOrNot };
