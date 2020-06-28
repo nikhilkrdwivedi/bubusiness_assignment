@@ -1,11 +1,31 @@
 {
-  "name": "bubusiness_backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Nikhil Kumar",
-  "license": "ISC"
+    "name": "bubusiness_backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon --exec babel-node src/server.js"
+    },
+    "author": "Nikhil Kumar",
+    "license": "ISC",
+    "dependencies": {
+        "@hapi/joi": "^17.1.1",
+        "bcrypt": "^4.0.1",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "forever": "^3.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^5.9.5",
+        "morgan": "^1.10.0",
+        "node-fetch": "^2.6.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.10.3",
+        "@babel/core": "^7.10.3",
+        "@babel/node": "^7.10.3",
+        "@babel/preset-env": "^7.10.3",
+        "nodemon": "^2.0.4"
+    }
 }
